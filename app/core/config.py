@@ -1,8 +1,10 @@
 import os
-from typing import Any, Callable, Generator, List, Protocol, Union
-
+from typing import Any, Callable, Generator, List, Protocol
 from cryptography.fernet import Fernet
-from pydantic.v1 import AnyHttpUrl, BaseSettings, Field, PostgresDsn, validator
+from pydantic import AnyHttpUrl, Field, PostgresDsn, ValidationInfo, field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+from openai import OpenAI
 
 CallableGenerator = Generator[Callable[..., Any], None, None]
 
@@ -76,29 +78,51 @@ class Settings(BaseSettings):
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
     BACKEND_CORS_ALLOW_ALL: bool = False
 
+    DATABASE_URI: PostgresDsn
+
+    LOGGING_CONF_FILE: str = "logging.conf"
+
     OPENAI_API_KEY: str
 
-    @validator("*")
-    def _decryptor(cls, v, values):
+    OPENAI_CLIENT: OpenAI = OpenAI()
+
+    # Models
+    LLM_MODEL: str | dict = {"DEBUG": "gpt-4o", "PROD": "gpt-4.1"}
+    LLM_MODEL_QUERY_BASE: str | dict = {"DEBUG": "gpt-4o-mini", "PROD": "gpt-4.1"}
+    LLM_MODEL_QUERY_ADVANCED: str | dict = {"DEBUG": "gpt-4o", "PROD": "o3-mini"}
+    LLM_MODEL_WORKERS: str | dict = "gpt-4o-mini"
+
+    @field_validator("*", mode="after")
+    def _decryptor(cls, v, validation_info: ValidationInfo, *args, **kwargs):
         if isinstance(v, EncryptedField):
-            return v.get_decrypted_value(values["FERNET_DECRYPTOR"])
+            print(f"-> Decrypting {validation_info.field_name}")
+            v = v.get_decrypted_value(validation_info.data["FERNET_DECRYPTOR"])
+            print(v)
+            return v
         return v
 
-    @validator("BACKEND_CORS_ORIGINS", pre=True)
-    def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
+    @field_validator("*", mode="after")
+    def assemble_model_type(cls, v, validation_info: ValidationInfo):
+        if isinstance(v, dict) and validation_info.field_name.startswith("LLM_MODEL"):
+            if validation_info.data["DEBUG"]:
+                return v["DEBUG"]
+            else:
+                return v["PROD"]
+        return v
+
+    @field_validator("BACKEND_CORS_ORIGINS", mode="after")
+    def assemble_cors_origins(cls, v: str | list[str]) -> list[str] | str:
         if isinstance(v, str) and not v.startswith("["):
             return [i.strip() for i in v.split(",")]
         elif isinstance(v, (list, str)):
             return v
         raise ValueError(v)
 
-    DATABASE_URI: PostgresDsn
-
-    LOGGING_CONF_FILE: str = "logging.conf"
-
-    class Config:
-        case_sensitive = True
-        env_file = os.environ.get("ENV", ".env")
+    model_config = SettingsConfigDict(
+        case_sensitive=True,
+        env_file=os.environ.get("ENV", ".env"),
+        extra="allow",
+    )
 
 
 settings = Settings()
