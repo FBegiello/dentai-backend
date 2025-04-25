@@ -1,0 +1,32 @@
+services:
+  dentai:
+    container_name: dentai
+    image: dentai:latest
+    working_dir: /app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - config/.env
+    volumes:
+      - .:/app
+    ports:
+      - 8000:8000
+    depends_on:
+      - postgres
+    restart: on-failure
+  postgres:
+    container_name: dentai-db
+    image: postgres:16
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: dentai-db
+      POSTGRES_PASSWORD: dentai-db
+      POSTGRES_DB: dentai-db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+
+volumes:
+  postgres_data:
