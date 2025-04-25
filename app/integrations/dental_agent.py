@@ -1,8 +1,9 @@
 from openai import OpenAI
-from agents import Agent, Runner, FileSearchTool, function_tool
+
+# from agents import Agent, Runner, FileSearchTool, function_tool
 
 from app.schemas.response_schema import Tooth
-from app.schemas.prompts import AGENT_PROMPT, WORKER_TOOTH_IDENTIFIER
+from app.schemas.prompts import WORKER_TOOTH_IDENTIFIER
 
 from app.core.config import settings
 
@@ -42,17 +43,21 @@ def initialize_rag():
         vector_store_id=vector_store.id
     )
 
+    print(result)
 
-_tool_dental_history = FileSearchTool(
-    vector_store_ids=[vector_store.id], max_num_results=3
-)
+    return vector_store
 
-_tool_fill_chart = function_tool(
-    mark_tooth,
-    name_override="mark_tooth_condition",
-    description_override="A tool for marking patient teeth state on a chart. "
-    "Should be called when receiving instructions about teeth state.",
-)
+
+# _tool_dental_history = FileSearchTool(
+#     vector_store_ids=[vector_store.id], max_num_results=3
+# )
+
+# _tool_fill_chart = function_tool(
+#     mark_tooth,
+#     name_override="mark_tooth_condition",
+#     description_override="A tool for marking patient teeth state on a chart. "
+#     "Should be called when receiving instructions about teeth state.",
+# )
 
 # agent = Agent(
 #     name="Dental assistant",
