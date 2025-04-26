@@ -21,7 +21,7 @@ class FakeFernet:
 
 class EncryptedField(str):
     @classmethod
-    def __modify_schema__(cls, field_schema: dict[str, Any]) -> None:
+    def __get_pydantic_json_schema__(cls, field_schema: dict[str, Any]) -> None:
         field_schema.update(type="str", writeOnly=True)
 
     @classmethod
@@ -29,13 +29,18 @@ class EncryptedField(str):
         yield cls.validate
 
     @classmethod
-    def validate(cls, value: str) -> "EncryptedField":
+    def validate(cls, value: str, validation_info: ValidationInfo) -> "EncryptedField":
         if isinstance(value, cls):
             return value
         return cls(value)
 
     def __init__(self, value: str):
-        self._secret_value = value.encode("utf-8")
+        print(value)
+        print(value.splitlines())
+        print("".join(value.splitlines()))
+        print("".join(value.splitlines()).strip())
+        self._secret_value = "".join(value.splitlines()).strip().encode("utf-8")
+        print(self._secret_value)
         self.decrypted = False
 
     def get_decrypted_value(self, decryptor: Decryptor) -> str:
@@ -47,8 +52,7 @@ class EncryptedField(str):
 
 
 class FernetDecryptorField(str):
-    def __modify_schema__(cls, field_schema: dict[str, Any]) -> None:
-        print(field_schema)
+    def __get_pydantic_json_schema__(cls, field_schema: dict[str, Any]) -> None:
         field_schema.update(type="str", writeOnly=True)
 
     @classmethod
@@ -56,7 +60,7 @@ class FernetDecryptorField(str):
         yield cls.validate
 
     @classmethod
-    def validate(cls, value: str) -> Decryptor:
+    def validate(cls, value: str, validation_info: ValidationInfo) -> Decryptor:
         master_key = os.environ.get(value)
         if not master_key:
             return FakeFernet()

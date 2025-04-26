@@ -1,8 +1,18 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException
 import httpx
+
+from starlette.requests import Request
+from app.api.deps import DentalAgentManagerDep
+
+from app.schemas.requests_schema import BaseAgentQueryRequest, BaseAgentQueryResponse
+
+# from app.integrations.dental_agent import _tool_fill_chart
+from app.schemas.prompts import AGENT_PROMPT
+
 from app.core.config import settings
 
 router = APIRouter()
+
 
 @router.post("/session")
 async def create_openai_session():
@@ -12,29 +22,41 @@ async def create_openai_session():
                 "https://api.openai.com/v1/realtime/sessions",
                 headers={
                     "Authorization": f"Bearer {settings.OPENAI_API_KEY}",
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
                 json={
                     "model": "gpt-4o-realtime-preview",
                     "modalities": ["audio", "text"],
-                    "instructions": "TBD"
-                }
+                    "tools": [],
+                    "instructions": AGENT_PROMPT,
+                },
             )
-            
+
             if response.status_code != 200:
                 raise HTTPException(
                     status_code=response.status_code,
-                    detail=f"OpenAI API error: {response.text}"
+                    detail=f"OpenAI API error: {response.text}",
                 )
-                
+
             return response.json()
     except httpx.HTTPError as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"HTTP error occurred: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"HTTP error occurred: {str(e)}")
     except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Internal server error: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+
+@router.post("/text_query")
+async def run_text_query(
+    request: Request,
+    agent_request: BaseAgentQueryRequest,
+    dental_agent: DentalAgentManagerDep,
+):
+    # try:
+    response = await dental_agent.query_agent_text_mode(query=agent_request.message)
+    return BaseAgentQueryResponse(response=response)
+
+
+# except httpx.HTTPError as e:
+#     raise HTTPException(status_code=500, detail=f"HTTP error occurred: {str(e)}")
+# except Exception as e:
+#     raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
