@@ -75,6 +75,6 @@ class DentalAgentManager:
         return vector_store
 
     async def query_agent_text_mode(self, query: str) -> str:
-        result = Runner.run(self.dental_agent, query)
+        result = await Runner.run(self.dental_agent, query)
         print(f"Agent output -> {result.final_output}")
         return result.final_output
