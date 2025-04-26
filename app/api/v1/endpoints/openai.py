@@ -51,12 +51,11 @@ async def run_text_query(
     agent_request: BaseAgentQueryRequest,
     dental_agent: DentalAgentManagerDep,
 ):
-    # try:
-    response = await dental_agent.query_agent_text_mode(query=agent_request.message)
-    return BaseAgentQueryResponse(response=response)
+    try:
+        response = await dental_agent.query_agent_text_mode(query=agent_request.message)
+        return BaseAgentQueryResponse(response=response)
 
-
-# except httpx.HTTPError as e:
-#     raise HTTPException(status_code=500, detail=f"HTTP error occurred: {str(e)}")
-# except Exception as e:
-#     raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+    except httpx.HTTPError as e:
+        raise HTTPException(status_code=500, detail=f"HTTP error occurred: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
