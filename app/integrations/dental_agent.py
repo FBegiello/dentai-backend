@@ -6,6 +6,7 @@ from agents import function_tool, FunctionTool, FileSearchTool
 from agents import Agent, Runner
 from openai.resources.vector_stores.vector_stores import VectorStore
 
+
 from app.schemas.response_schema import Tooth, TOOTH_MAPPING
 from app.schemas.prompts import (
     WORKER_TOOTH_IDENTIFIER,
@@ -71,6 +72,7 @@ class DentalAgentManager:
                 tooth.position = TOOTH_MAPPING[tooth.jaw][tooth.side][
                     (tooth.position.value - 1)
                 ]
+                # tooth.position = tooth.position.value - 1
                 print(tooth.position)
             return buffer_state
         else:

@@ -41,4 +41,3 @@ class Jaw(Enum):
 
 class JawSide(Enum):
     L = "left"
-    R = "right"
