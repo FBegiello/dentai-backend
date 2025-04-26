@@ -80,7 +80,7 @@ class Settings(BaseSettings):
     DEBUG: bool = False
 
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
-    BACKEND_CORS_ALLOW_ALL: bool = False
+    BACKEND_CORS_ALLOW_ALL: bool = True
 
     DATABASE_URI: PostgresDsn
 
