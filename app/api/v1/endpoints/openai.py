@@ -6,7 +6,6 @@ from app.api.deps import DentalAgentManagerDep
 
 from app.schemas.requests_schema import BaseAgentQueryRequest, BaseAgentQueryResponse
 
-# from app.integrations.dental_agent import _tool_fill_chart
 from app.schemas.prompts import AGENT_PROMPT
 
 from app.core.config import settings
@@ -53,7 +52,13 @@ async def run_text_query(
 ):
     try:
         response = await dental_agent.query_agent_text_mode(query=agent_request.message)
-        return BaseAgentQueryResponse(response=response)
+        bytes = dental_agent.generate_audio_response(message=response)
+
+        return BaseAgentQueryResponse(
+            response_text=response,
+            response_bytes=bytes,
+            action=dental_agent.flush_buffer(),
+        )
 
     except httpx.HTTPError as e:
         raise HTTPException(status_code=500, detail=f"HTTP error occurred: {str(e)}")

@@ -16,6 +16,9 @@ Make sure to include:
 Format the notes cleanly and concisely for quick review.
 """
 
+AUDIO_GENERATOR_PROMPT = (
+    "You are a dentis assistant - speak in a profesional and calm tone."
+)
 
 WORKER_TOOTH_IDENTIFIER = (
     "Extract dental identifiers of a tooth from the following message"
