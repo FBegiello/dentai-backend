@@ -91,10 +91,16 @@ class Settings(BaseSettings):
     OPENAI_CLIENT: OpenAI = OpenAI()
 
     # Models
-    LLM_MODEL: str | dict = {"DEBUG": "gpt-4o", "PROD": "gpt-4.1"}
-    LLM_MODEL_QUERY_BASE: str | dict = {"DEBUG": "gpt-4o-mini", "PROD": "gpt-4.1"}
-    LLM_MODEL_QUERY_ADVANCED: str | dict = {"DEBUG": "gpt-4o", "PROD": "o3-mini"}
+    LLM_MODEL: str = "gpt-4.1"
+    LLM_MODEL_COMPLEX: str = "o3-mini"
+    LLM_MODEL_TTS: str = "gpt-4o-mini-tts"
     LLM_MODEL_WORKERS: str | dict = "gpt-4o-mini"
+
+    LLM_MODEL_TTS_VOICE: str = "coral"
+
+    # Data
+    DATA_PATH: str = "./data/dent-hist.md"
+    TEMP_AUDIO_PATH: str = "./data/audio.mp3"
 
     @field_validator("*", mode="after")
     def _decryptor(cls, v, validation_info: ValidationInfo, *args, **kwargs):

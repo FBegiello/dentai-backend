@@ -11,3 +11,7 @@ class BaseAgentQueryResponse(BaseModel):
     response_text: str
     response_bytes: bytes
     action: list[Tooth] | None
+
+
+class BaseAgentTranscriptResponse(BaseModel):
+    transcript: str

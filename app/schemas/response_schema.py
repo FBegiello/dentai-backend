@@ -16,7 +16,7 @@ class Tooth(BaseModel):
     surface: ToothSurface
 
 
-tooth_mapping = {
+TOOTH_MAPPING = {
     Jaw.UP: {
         JawSide.L: [9, 10, 11, 12, 13, 14, 15, 16],
         JawSide.R: [1, 2, 3, 4, 5, 6, 7, 8],

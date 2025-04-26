@@ -20,6 +20,31 @@ AUDIO_GENERATOR_PROMPT = (
     "You are a dentis assistant - speak in a profesional and calm tone."
 )
 
-WORKER_TOOTH_IDENTIFIER = (
-    "Extract dental identifiers of a tooth from the following message"
-)
+
+WORKER_TOOTH_IDENTIFIER = "Extract dental identifiers of a tooth from the following message. Follow the defined structure"
+
+
+WORKER_NOTETAKER = """
+    Your task now is to generate a summation of the current conversation, representing a dental visit.
+    Remember to note all the procedures and decision. Maintain a clear representation of the transcript.
+
+    Follow a format consisting of a date header, procedures section containing all procedures, and notes, containing general description of the visit.
+
+    Below you have a few examples of visit notes:
+    
+    <exmaple_note_format>
+
+    **April 5, 2025**  
+    **Procedure:** Dental Cleaning & Check-Up  
+    **Notes:** Mild gingivitis in lower front teeth. Advised flossing more regularly. No new caries.
+
+    **February 10, 2025**  
+    **Procedure:** Bitewing X-rays  
+    **Notes:** No signs of decay. Wisdom teeth stable and monitored annually.
+
+    <exmaple_note_format/>
+
+    Now perform summarisation in the given format for the conversation given below:
+    -----
+    
+"""
