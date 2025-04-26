@@ -72,7 +72,7 @@ class DentalAgentManager:
                 tooth.position = TOOTH_MAPPING[tooth.jaw][tooth.side][
                     (tooth.position.value - 1)
                 ]
-                # tooth.position = tooth.position.value - 1
+
                 print(tooth.position)
             return buffer_state
         else:
