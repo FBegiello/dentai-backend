@@ -8,6 +8,8 @@ Core funtionalities are:
 - Interactive voice agent responding to instructions with voice messages,
 - Generation of final notes for submission into the database,
 
+![Main screen](https://github.com/FBegiello/dentai-backend/misc/screen-1.png)
+![Main screen](https://github.com/FBegiello/dentai-backend/misc/screen-2.png)
 
 The core agent is built with OpenAI AgentSDK - we use a core agent for base interactions, with dedicated FunctionTool for tooth condition selection based on user voice inputs, and FileSearch over a simple vectore storage containing patient information. Text to speech capabilites are covered using OpenAI Text to speech models - we serve generated audio to the frontend application. User inputs are submitted from frontend, based on a simple VAD functionalities on the browser side. The backed receives only segments containing instructions and notes. After ending the interaction, a final note is generaterd, summing up the visit, that can be appended to the full dental history.
 
